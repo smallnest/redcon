@@ -230,7 +230,7 @@ func (rd *Reader) readCommands(leftover *int) ([]Command, error) {
 		}
 	}
 	n, err := rd.rd.Read(rd.buf[rd.end:])
-	if err != nil {
+	if err != nil || n == 0 {
 		return nil, err
 	}
 	rd.end += n
