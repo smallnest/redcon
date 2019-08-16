@@ -537,7 +537,7 @@ func (c Command) GetAllArgs() [][]byte {
 
 // GetArgs get args for zero allocations for args.
 func (c Command) GetArgs(i int) []byte {
-	if c.Args != nil {
+	if c.Args != nil && len(c.Args) > 0 {
 		return c.Args[i]
 	}
 	h := i * 2
@@ -546,7 +546,7 @@ func (c Command) GetArgs(i int) []byte {
 
 // GetArgCount get count of args.
 func (c Command) GetArgCount() int {
-	if c.Args != nil {
+	if c.Args != nil && len(c.Args) > 0 {
 		return len(c.Args)
 	}
 
