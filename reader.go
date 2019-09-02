@@ -28,8 +28,8 @@ func (rd *Reader) readCommands(leftover *int) ([]Command, error) {
 	var cmds = rd.cmds[:0]
 	b := rd.buf[rd.start:rd.end]
 	if rd.end-rd.start == 0 && len(rd.buf) > InitReaderBufferSize {
-		//rd.buf = make([]byte, InitReaderBufferSize)
-		rd.buf = rd.buf[:InitReaderBufferSize]
+		rd.buf = make([]byte, InitReaderBufferSize)
+		//rd.buf = rd.buf[:InitReaderBufferSize]
 		rd.start = 0
 		rd.end = 0
 	}
