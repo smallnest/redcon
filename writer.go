@@ -58,7 +58,12 @@ func (w *Writer) Flush() error {
 	if _, err := w.w.Write(w.b); err != nil {
 		return err
 	}
-	w.b = w.b[:0]
+	if len(w.b) > 1024*1024 {
+		w.b = make([]byte, 0, 1024*1024)
+	} else {
+		w.b = w.b[:0]
+	}
+
 	return nil
 }
 
