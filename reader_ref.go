@@ -1,33 +1,12 @@
 package redcon
 
 import (
-	"io"
 	"time"
 )
 
-// Reader represent a reader for RESP or telnet commands.
-type Reader struct {
-	rd      io.Reader
-	buf     []byte
-	start   int
-	end     int
-	cmds    []Command
-	refcmds []*Command
-}
-
-// NewReader returns a command reader which will read RESP or telnet commands.
-func NewReader(rd io.Reader) *Reader {
-	return &Reader{
-		rd:      rd,
-		cmds:    make([]Command, 0, 50),
-		refcmds: make([]*Command, 0, 50),
-		buf:     make([]byte, InitReaderBufferSize),
-	}
-}
-
-func (rd *Reader) readCommands(leftover *int) ([]Command, error) {
+func (rd *Reader) readRefCommands(leftover *int) ([]*Command, error) {
 	start := time.Now().UnixNano()
-	var cmds = rd.cmds[:0]
+	var cmds = rd.refcmds[:0]
 	b := rd.buf[rd.start:rd.end]
 	if rd.end-rd.start == 0 && len(rd.buf) > InitReaderBufferSize {
 		if len(rd.buf) > InitReaderBufferSize*2 {
@@ -126,7 +105,7 @@ func (rd *Reader) readCommands(leftover *int) ([]Command, error) {
 						}
 						cmd.Raw = wr.b
 						cmd.Time = start
-						cmds = append(cmds, cmd)
+						cmds = append(cmds, &cmd)
 					}
 					b = b[i+1:]
 					if len(b) > 0 {
@@ -199,7 +178,7 @@ func (rd *Reader) readCommands(leftover *int) ([]Command, error) {
 
 						cmd.marks = marks
 						cmd.Time = start
-						cmds = append(cmds, cmd)
+						cmds = append(cmds, &cmd)
 						b = b[i+1:]
 						if len(b) > 0 {
 							goto next
@@ -239,25 +218,25 @@ func (rd *Reader) readCommands(leftover *int) ([]Command, error) {
 		return nil, err
 	}
 	rd.end += n
-	return rd.readCommands(leftover)
+	return rd.readRefCommands(leftover)
 }
 
 // ReadCommands reads multiple commands for pipeline mode.
-func (rd *Reader) ReadCommands() ([]Command, error) {
-	return rd.readCommands(nil)
+func (rd *Reader) ReadRefCommands() ([]*Command, error) {
+	return rd.readRefCommands(nil)
 }
 
 // ReadCommand reads the next command.
-func (rd *Reader) ReadCommand() (Command, error) {
-	if len(rd.cmds) > 0 {
-		cmd := rd.cmds[0]
-		rd.cmds = rd.cmds[1:]
+func (rd *Reader) ReadRefCommand() (*Command, error) {
+	if len(rd.refcmds) > 0 {
+		cmd := rd.refcmds[0]
+		rd.refcmds = rd.refcmds[1:]
 		return cmd, nil
 	}
-	cmds, err := rd.readCommands(nil)
+	cmds, err := rd.readRefCommands(nil)
 	if err != nil {
-		return Command{}, err
+		return &Command{}, err
 	}
-	rd.cmds = cmds
-	return rd.ReadCommand()
+	rd.refcmds = cmds
+	return rd.ReadRefCommand()
 }
