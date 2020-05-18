@@ -3,13 +3,14 @@
     src="logo.png" 
     width="336" height="75" border="0" alt="REDCON">
 <br>
-<a href="https://travis-ci.org/tidwall/redcon"><img src="https://img.shields.io/travis/tidwall/redcon.svg?style=flat-square" alt="Build Status"></a>
-<a href="https://godoc.org/github.com/tidwall/redcon"><img src="https://img.shields.io/badge/api-reference-blue.svg?style=flat-square" alt="GoDoc"></a>
+<a href="https://travis-ci.org/smallnest/redcon"><img src="https://img.shields.io/travis/smallnest/redcon.svg?style=flat-square" alt="Build Status"></a>
+<a href="https://godoc.org/github.com/smallnest/redcon"><img src="https://img.shields.io/badge/api-reference-blue.svg?style=flat-square" alt="GoDoc"></a>
 </p>
 
 <p align="center">Fast Redis compatible server framework for Go</p>
 
-Redcon is a custom Redis server framework for Go that is fast and simple to use. The reason for this library it to give an efficient server front-end for the [BuntDB](https://github.com/tidwall/buntdb) and [Tile38](https://github.com/tidwall/tile38) projects.
+cloned from [tidwall/redcon](https://github.com/tidwall/redcon) but have add some features independently.
+
 
 Features
 --------
@@ -23,7 +24,7 @@ Installing
 ----------
 
 ```
-go get -u github.com/tidwall/redcon
+go get -u github.com/smallnest/redcon
 ```
 
 Example
@@ -39,9 +40,6 @@ Here's a full example of a Redis clone that accepts:
 
 You can run this example from a terminal:
 
-```sh
-go run example/clone.go
-```
 
 ```go
 package main
@@ -51,7 +49,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/tidwall/redcon"
+	"github.com/smallnest/redcon"
 )
 
 var addr = ":6380"
@@ -123,59 +121,6 @@ func main() {
 	}
 }
 ```
-
-TLS Example
------------
-
-Redcon has full TLS support through the `ListenAndServeTLS` function.
-
-The [same example](example/tls/clone.go) is also provided for serving Redcon over TLS. 
-
-```sh
-go run example/tls/clone.go
-```
-
-Benchmarks
-----------
-
-**Redis**: Single-threaded, no disk persistence.
-
-```
-$ redis-server --port 6379 --appendonly no
-```
-```
-redis-benchmark -p 6379 -t set,get -n 10000000 -q -P 512 -c 512
-SET: 941265.12 requests per second
-GET: 1189909.50 requests per second
-```
-
-**Redcon**: Single-threaded, no disk persistence.
-
-```
-$ GOMAXPROCS=1 go run example/clone.go
-```
-```
-redis-benchmark -p 6380 -t set,get -n 10000000 -q -P 512 -c 512
-SET: 2018570.88 requests per second
-GET: 2403846.25 requests per second
-```
-
-**Redcon**: Multi-threaded, no disk persistence.
-
-```
-$ GOMAXPROCS=0 go run example/clone.go
-```
-```
-$ redis-benchmark -p 6380 -t set,get -n 10000000 -q -P 512 -c 512
-SET: 1944390.38 requests per second
-GET: 3993610.25 requests per second
-```
-
-*Running on a MacBook Pro 15" 2.8 GHz Intel Core i7 using Go 1.7*
-
-Contact
--------
-Josh Baker [@tidwall](http://twitter.com/tidwall)
 
 License
 -------

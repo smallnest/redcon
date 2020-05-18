@@ -520,6 +520,7 @@ type Command struct {
 	Args  [][]byte
 	marks []int
 	Time  int64
+	ATime int64 //再次发送时的时间
 }
 
 func (c Command) GetAllArgs() [][]byte {
