@@ -186,16 +186,10 @@ func (rd *Reader) readCommands(leftover *int) ([]Command, error) {
 					}
 					if len(marks) == count*2 {
 						var cmd Command
-						if rd.rd != nil {
-							// make a raw copy of the entire command when
-							// there's a underlying reader.
-							raw := make([]byte, i+1)
-							copy(raw, b[:i+1])
-							cmd.Raw = raw
-						} else {
-							// just assign the slice
-							cmd.Raw = b[:i+1]
-						}
+
+						raw := make([]byte, i+1)
+						copy(raw, b[:i+1])
+						cmd.Raw = raw
 
 						cmd.marks = marks
 						cmd.Time = start
